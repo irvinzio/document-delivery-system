@@ -1,0 +1,34 @@
+// Prisma schema for document delivery system
+// Defines User and Document models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  sent      Document[] @relation("Sender")
+  received  Document[] @relation("Recipient")
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  name        String
+  content     String   // Encrypted base64/text
+  senderId    String
+  recipientId String
+  viewLimit   Int?
+  viewCount   Int      @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  sender      User     @relation("Sender", fields: [senderId], references: [id])
+  recipient   User     @relation("Recipient", fields: [recipientId], references: [id])
+}

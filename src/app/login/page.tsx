@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Input, Heading, Text } from "@chakra-ui/react";
+import { Container, Button, TextField, Typography, Alert, Box } from "@mui/material";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -30,34 +30,33 @@ export default function LoginPage() {
   }
 
   return (
-    <Box maxW="sm" mx="auto" mt={20} p={8} borderWidth={1} borderRadius="lg" boxShadow="md">
-      <Heading mb={6} textAlign="center">Login</Heading>
-      <form onSubmit={handleLogin}>
-        <Box mb={4}>
-          <label htmlFor="email" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Email</label>
-          <Input
-            id="email"
-            placeholder="Email"
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Box sx={{ p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+        <Typography variant="h4" align="center" gutterBottom>Login</Typography>
+        <form onSubmit={handleLogin}>
+          <TextField
+            label="Email"
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            fullWidth
+            margin="normal"
+            autoFocus
           />
-        </Box>
-        <Box mb={4}>
-          <label htmlFor="password" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Password</label>
-          <Input
-            id="password"
-            placeholder="Password"
+          <TextField
+            label="Password"
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            fullWidth
+            margin="normal"
           />
-        </Box>
-        {error && <Text color="red.500" textAlign="center">{error}</Text>}
-        <Button type="submit" colorScheme="blue" w="full">Login</Button>
-      </form>
-    </Box>
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }}>Login</Button>
+        </form>
+      </Box>
+    </Container>
   );
 }

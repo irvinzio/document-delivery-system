@@ -1,6 +1,6 @@
 "use client";
-import { Box, Flex, Button } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { AppBar, Toolbar, Button, Box } from "@mui/material";
 
 export default function Navbar() {
   const router = useRouter();
@@ -9,30 +9,12 @@ export default function Navbar() {
     signOut({ callbackUrl: "/login" });
   }
   return (
-    <Box as="nav" w="100%" bg="gray.100" px={4} py={3} borderBottom="1px" borderColor="gray.200">
-      <Flex justify="flex-end" align="center" gap={4}>
-        <Button
-          colorScheme="teal"
-          fontWeight="bold"
-          onClick={() => router.push("/documents")}
-        >
-          Document List
-        </Button>
-        <Button
-          colorScheme="blue"
-          fontWeight="bold"
-          onClick={() => router.push("/upload")}
-        >
-          Upload Document
-        </Button>
-        <Button
-          colorScheme="red"
-          fontWeight="bold"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </Button>
-      </Flex>
-    </Box>
+    <AppBar position="static" color="default" elevation={1}>
+      <Toolbar sx={{ justifyContent: "flex-end", gap: 2 }}>
+        <Button variant="outlined" color="primary" onClick={() => router.push("/documents")}>Document List</Button>
+        <Button variant="outlined" color="secondary" onClick={() => router.push("/upload")}>Upload Document</Button>
+        <Button variant="contained" color="error" onClick={handleSignOut}>Sign Out</Button>
+      </Toolbar>
+    </AppBar>
   );
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Box, Heading, Text, Button } from "@chakra-ui/react";
+import { Container, Box, Typography, Button, Table, TableHead, TableBody, TableRow, TableCell, Alert } from "@mui/material";
 
 export default function DocumentsPage() {
   const { data: session } = useSession();
@@ -64,90 +64,92 @@ export default function DocumentsPage() {
   }
 
   return (
-    <Box maxW="4xl" mx="auto" mt={10} p={8} borderWidth={1} borderRadius="lg">
-      <Heading mb={6}>Your Documents</Heading>
-      <Text fontWeight="bold" mb={2}>Uploaded Documents</Text>
-      <table style={{ width: "100%", marginBottom: "1.5rem", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Recipient</th>
-            <th>Views</th>
-            <th>View Limit</th>
-            <th>Expires At</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sent.map((doc: any) => (
-            <tr key={doc.id}>
-              <td>{doc.name}</td>
-              <td>{doc.recipientId}</td>
-              <td>{doc.viewCount}</td>
-              <td>{doc.viewLimit ?? "-"}</td>
-              <td>{doc.expiresAt ? new Date(doc.expiresAt).toLocaleDateString() : "-"}</td>
-              <td><Button size="sm" onClick={() => handleView(doc.id)}>View</Button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Text fontWeight="bold" mb={2}>Received Documents</Text>
-      <table style={{ width: "100%", marginBottom: "1.5rem", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Sender</th>
-            <th>Views</th>
-            <th>View Limit</th>
-            <th>Expires At</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {received.map((doc: any) => (
-            <tr key={doc.id}>
-              <td>{doc.name}</td>
-              <td>{doc.senderId}</td>
-              <td>{doc.viewCount}</td>
-              <td>{doc.viewLimit ?? "-"}</td>
-              <td>{doc.expiresAt ? new Date(doc.expiresAt).toLocaleDateString() : "-"}</td>
-              <td><Button size="sm" onClick={() => handleView(doc.id)}>View</Button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {error && <Text color="red.500" mb={4}>{error}</Text>}
-      {viewedDoc && (
-        <Box mt={6} p={4} borderWidth={1} borderRadius="md" bg="gray.50">
-          <Heading size="md" mb={2}>Document: {viewedDoc.name}</Heading>
-          <Text mb={2}>Content Preview:</Text>
-          {/* Try to preview common file types */}
-          {(() => {
-            if (typeof viewedDoc.content === "string" && viewedDoc.content.startsWith("data:")) {
-              const mime = viewedDoc.content.split(';')[0].replace('data:', '');
-              if (mime.startsWith("image/")) {
-                return <img src={viewedDoc.content} alt={viewedDoc.name} style={{ maxWidth: "100%", maxHeight: 300 }} />;
-              }
-              if (mime === "application/pdf") {
-                return <iframe src={viewedDoc.content} title="PDF Preview" style={{ width: "100%", height: 400, border: "none" }} />;
-              }
-              if (mime.startsWith("text/")) {
-                // Show text content
-                const matches = viewedDoc.content.match(/^data:(.+);base64,(.+)$/);
-                if (matches) {
-                  const decoded = atob(matches[2]);
-                  return <Box p={2} bg="white" borderWidth={1} borderRadius="md" fontFamily="mono" whiteSpace="pre-wrap">{decoded}</Box>;
+    <Container maxWidth="lg" sx={{ mt: 10 }}>
+      <Box sx={{ p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+        <Typography variant="h4" gutterBottom>Your Documents</Typography>
+        <Typography fontWeight="bold" mb={2}>Uploaded Documents</Typography>
+        <Table sx={{ mb: 4 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Recipient</TableCell>
+              <TableCell>Views</TableCell>
+              <TableCell>View Limit</TableCell>
+              <TableCell>Expires At</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sent.map((doc: any) => (
+              <TableRow key={doc.id}>
+                <TableCell>{doc.name}</TableCell>
+                <TableCell>{doc.recipientId}</TableCell>
+                <TableCell>{doc.viewCount}</TableCell>
+                <TableCell>{doc.viewLimit ?? "-"}</TableCell>
+                <TableCell>{doc.expiresAt ? new Date(doc.expiresAt).toLocaleDateString() : "-"}</TableCell>
+                <TableCell><Button size="small" variant="outlined" onClick={() => handleView(doc.id)}>View</Button></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Typography fontWeight="bold" mb={2}>Received Documents</Typography>
+        <Table sx={{ mb: 4 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Sender</TableCell>
+              <TableCell>Views</TableCell>
+              <TableCell>View Limit</TableCell>
+              <TableCell>Expires At</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {received.map((doc: any) => (
+              <TableRow key={doc.id}>
+                <TableCell>{doc.name}</TableCell>
+                <TableCell>{doc.senderId}</TableCell>
+                <TableCell>{doc.viewCount}</TableCell>
+                <TableCell>{doc.viewLimit ?? "-"}</TableCell>
+                <TableCell>{doc.expiresAt ? new Date(doc.expiresAt).toLocaleDateString() : "-"}</TableCell>
+                <TableCell><Button size="small" variant="outlined" onClick={() => handleView(doc.id)}>View</Button></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {viewedDoc && (
+          <Box sx={{ mt: 4, p: 3, borderRadius: 2, boxShadow: 2, bgcolor: 'grey.100' }}>
+            <Typography variant="h6" mb={2}>Document: {viewedDoc.name}</Typography>
+            <Typography mb={2}>Content Preview:</Typography>
+            {/* Try to preview common file types */}
+            {(() => {
+              if (typeof viewedDoc.content === "string" && viewedDoc.content.startsWith("data:")) {
+                const mime = viewedDoc.content.split(';')[0].replace('data:', '');
+                if (mime.startsWith("image/")) {
+                  return <img src={viewedDoc.content} alt={viewedDoc.name} style={{ maxWidth: "100%", maxHeight: 300 }} />;
+                }
+                if (mime === "application/pdf") {
+                  return <iframe src={viewedDoc.content} title="PDF Preview" style={{ width: "100%", height: 400, border: "none" }} />;
+                }
+                if (mime.startsWith("text/")) {
+                  // Show text content
+                  const matches = viewedDoc.content.match(/^data:(.+);base64,(.+)$/);
+                  if (matches) {
+                    const decoded = atob(matches[2]);
+                    return <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 1, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>{decoded}</Box>;
+                  }
                 }
               }
-            }
-            // Fallback: show download link
-            return <Text>Preview not available. Please download the file.</Text>;
-          })()}
-          <Button mt={4} colorScheme="green" onClick={() => handleDownload(viewedDoc)}>
-            Download
-          </Button>
-        </Box>
-      )}
-    </Box>
+              // Fallback: show download link
+              return <Typography>Preview not available. Please download the file.</Typography>;
+            })()}
+            <Button variant="contained" color="success" sx={{ mt: 2 }} onClick={() => handleDownload(viewedDoc)}>
+              Download
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 }

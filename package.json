@@ -9,15 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.24.2",
-    "@chakra-ui/system": "^2.6.2",
-    "@chakra-ui/theme-tools": "^2.2.6",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
+    "@mui/x-date-pickers": "^8.10.0",
     "@prisma/client": "^6.13.0",
     "bcrypt": "^6.0.0",
+    "dayjs": "^1.11.13",
     "dotenv": "^17.2.1",
-    "framer-motion": "^12.23.12",
     "jsonwebtoken": "^9.0.2",
     "next": "15.4.6",
     "next-auth": "^4.24.11",
@@ -28,12 +24,13 @@
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@eslint/eslintrc": "^3",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5"

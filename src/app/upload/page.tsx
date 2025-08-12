@@ -2,7 +2,13 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Input, Heading, Text } from "@chakra-ui/react";
+import { Container, Button, TextField, Typography, Alert, MenuItem, Box } from "@mui/material";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from "dayjs";
+
+
 
 export default function UploadPage() {
   const { data: session } = useSession();
@@ -66,48 +72,83 @@ export default function UploadPage() {
   }
 
   return (
-    <Box maxW="md" mx="auto" mt={10} p={8} borderWidth={1} borderRadius="lg">
-      <Heading mb={6}>Upload Document</Heading>
-      <form onSubmit={handleUpload}>
-        <Box mb={4}>
-          <label htmlFor="name" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Document Name</label>
-          <Input
-            id="name"
-            placeholder="Document Name"
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Box sx={{ p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+        <Typography variant="h4" align="center" gutterBottom>Upload Document</Typography>
+        <form onSubmit={handleUpload}>
+          <TextField
+            label="Document Name"
             value={name}
             onChange={e => setName(e.target.value)}
             required
+            fullWidth
+            margin="normal"
           />
-        </Box>
-        <Box mb={4}>
-          <label htmlFor="file" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Select File</label>
-          <Input
-            id="file"
-            type="file"
-            onChange={handleFileChange}
-            accept=".pdf,.doc,.docx,.txt,.html,.htm,.jpg,.png,.jpeg,.csv,.xlsx,.xls,.json,.xml,.md,.zip,.rar,.ppt,.pptx,.odt,.ods,.odp,.rtf,.gif,.bmp,.svg,.webp,.mp3,.mp4,.wav,.avi,.mov,.mkv,.flac,.ogg,.aac,.ts,.m4a,.m4v,.apk,.exe,.dmg,.iso,.tar,.gz,.7z,.psd,.ai,.eps,.ttf,.otf,.woff,.woff2,.eot,.csv,.tsv,.yaml,.yml,.log,.conf,.ini,.bat,.sh,.c,.cpp,.h,.hpp,.java,.py,.rb,.go,.rs,.swift,.kt,.dart,.php,.asp,.aspx,.jsp,.html,.htm"
-          />
-        </Box>
-        <Box mb={4}>
-          <label htmlFor="recipient" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Recipient</label>
-          <select id="recipient" value={recipientId} onChange={e => setRecipientId(e.target.value)} required style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}>
-            <option value="">Select recipient</option>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Select File
+            <input
+              type="file"
+              hidden
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx,.txt,.html,.htm,.jpg,.png,.jpeg,.csv,.xlsx,.xls,.json,.xml,.md,.zip,.rar,.ppt,.pptx,.odt,.ods,.odp,.rtf,.gif,.bmp,.svg,.webp,.mp3,.mp4,.wav,.avi,.mov,.mkv,.flac,.ogg,.aac,.ts,.m4a,.m4v,.apk,.exe,.dmg,.iso,.tar,.gz,.7z,.psd,.ai,.eps,.ttf,.otf,.woff,.woff2,.eot,.csv,.tsv,.yaml,.yml,.log,.conf,.ini,.bat,.sh,.c,.cpp,.h,.hpp,.java,.py,.rb,.go,.rs,.swift,.kt,.dart,.php,.asp,.aspx,.jsp,.html,.htm"
+            />
+          </Button>
+          {file && (
+            <Typography variant="body2" sx={{ mt: 1, mb: 1, color: 'text.secondary' }}>
+              Selected file: {file.name}
+            </Typography>
+          )}
+          <TextField
+            select
+            label="Recipient"
+            value={recipientId}
+            onChange={e => setRecipientId(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+          >
+            <MenuItem value="">Select recipient</MenuItem>
             {users.map((u: any) => (
-              <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+              <MenuItem key={u.id} value={u.id}>{u.name} ({u.email})</MenuItem>
             ))}
-          </select>
-        </Box>
-        <Box mb={4}>
-          <label htmlFor="viewLimit" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>View Limit (optional)</label>
-          <input type="number" id="viewLimit" value={viewLimit} onChange={e => setViewLimit(e.target.value)} min={1} style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
-        </Box>
-        <Box mb={4}>
-          <label htmlFor="expiresAt" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Expiration Date (optional)</label>
-          <Input type="date" id="expiresAt" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
-        </Box>
-        {error && <Text color="red.500" textAlign="center">{error}</Text>}
-        <Button type="submit" colorScheme="blue" w="full">Upload</Button>
-      </form>
-    </Box>
+          </TextField>
+          <TextField
+            label="View Limit (optional)"
+            type="number"
+            value={viewLimit}
+            onChange={e => setViewLimit(e.target.value)}
+            fullWidth
+            margin="normal"
+            inputProps={{ min: 1 }}
+          />
+          {/* <TextField
+            label="Expiration Date (optional)"
+            type="date"
+            value={expiresAt}
+            onChange={e => setExpiresAt(e.target.value)}
+            fullWidth
+            margin="normal"
+            InputLabelPro
+            ps={{ shrink: true }}
+          /> */}
+           <LocalizationProvider dateAdapter={AdapterDayjs}>
+             <DatePicker
+              label="Expiration Date (optional)"
+              value={expiresAt ? dayjs(expiresAt) : null}
+              onChange={e => setExpiresAt(e ? e.format() : "")}
+            />
+           </LocalizationProvider>
+         
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }}>Upload</Button>
+        </form>
+      </Box>
+    </Container>
   );
 }

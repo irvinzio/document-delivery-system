@@ -1,6 +1,6 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import { Provider } from "@/components/ui/provider";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
@@ -25,10 +25,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}> 
         <SessionProvider>
-          <Provider>
+          <ThemeProvider theme={createTheme()}>
+            <CssBaseline />
             <NavbarWrapper />
             {children}
-          </Provider>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

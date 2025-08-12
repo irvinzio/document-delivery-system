@@ -15,6 +15,7 @@ export default function UploadPage() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     // Fetch users for recipient selection
@@ -50,21 +51,46 @@ export default function UploadPage() {
     }
   }
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setContent(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setContent("");
+    }
+  }
+
   return (
     <Box maxW="md" mx="auto" mt={10} p={8} borderWidth={1} borderRadius="lg">
       <Heading mb={6}>Upload Document</Heading>
       <form onSubmit={handleUpload}>
         <Box mb={4}>
-          <label>Document Name</label>
-          <Input value={name} onChange={e => setName(e.target.value)} required />
+          <label htmlFor="name" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Document Name</label>
+          <Input
+            id="name"
+            placeholder="Document Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
         </Box>
         <Box mb={4}>
-          <label>Content (base64/text)</label>
-          <Input value={content} onChange={e => setContent(e.target.value)} required />
+          <label htmlFor="file" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Select File</label>
+          <Input
+            id="file"
+            type="file"
+            onChange={handleFileChange}
+            accept=".pdf,.doc,.docx,.txt,.html,.htm,.jpg,.png,.jpeg,.csv,.xlsx,.xls,.json,.xml,.md,.zip,.rar,.ppt,.pptx,.odt,.ods,.odp,.rtf,.gif,.bmp,.svg,.webp,.mp3,.mp4,.wav,.avi,.mov,.mkv,.flac,.ogg,.aac,.ts,.m4a,.m4v,.apk,.exe,.dmg,.iso,.tar,.gz,.7z,.psd,.ai,.eps,.ttf,.otf,.woff,.woff2,.eot,.csv,.tsv,.yaml,.yml,.log,.conf,.ini,.bat,.sh,.c,.cpp,.h,.hpp,.java,.py,.rb,.go,.rs,.swift,.kt,.dart,.php,.asp,.aspx,.jsp,.html,.htm"
+          />
         </Box>
         <Box mb={4}>
-          <label>Recipient</label>
-          <select value={recipientId} onChange={e => setRecipientId(e.target.value)} required style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}>
+          <label htmlFor="recipient" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Recipient</label>
+          <select id="recipient" value={recipientId} onChange={e => setRecipientId(e.target.value)} required style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}>
             <option value="">Select recipient</option>
             {users.map((u: any) => (
               <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
@@ -72,15 +98,14 @@ export default function UploadPage() {
           </select>
         </Box>
         <Box mb={4}>
-          <label>View Limit (optional)</label>
-          <input type="number" value={viewLimit} onChange={e => setViewLimit(e.target.value)} min={1} style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
+          <label htmlFor="viewLimit" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>View Limit (optional)</label>
+          <input type="number" id="viewLimit" value={viewLimit} onChange={e => setViewLimit(e.target.value)} min={1} style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
         </Box>
         <Box mb={4}>
-          <label>Expiration Date (optional)</label>
-          <Input type="date" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
+          <label htmlFor="expiresAt" style={{ fontWeight: "bold", marginBottom: 4, display: "block" }}>Expiration Date (optional)</label>
+          <Input type="date" id="expiresAt" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
         </Box>
-        {error && <Text color="red.500" mb={2}>{error}</Text>}
-        {success && <Text color="green.500" mb={2}>{success}</Text>}
+        {error && <Text color="red.500" textAlign="center">{error}</Text>}
         <Button type="submit" colorScheme="blue" w="full">Upload</Button>
       </form>
     </Box>

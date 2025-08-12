@@ -1,9 +1,9 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "@/components/ui/provider";
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import NavbarWrapper from "@/components/NavbarWrapper";
 
 
 const geistSans = Geist({
@@ -25,7 +25,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}> 
         <SessionProvider>
-          <Provider>{children}</Provider>
+          <Provider>
+            <NavbarWrapper />
+            {children}
+          </Provider>
         </SessionProvider>
       </body>
     </html>

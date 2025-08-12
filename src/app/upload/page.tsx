@@ -126,16 +126,6 @@ export default function UploadPage() {
             margin="normal"
             inputProps={{ min: 1 }}
           />
-          {/* <TextField
-            label="Expiration Date (optional)"
-            type="date"
-            value={expiresAt}
-            onChange={e => setExpiresAt(e.target.value)}
-            fullWidth
-            margin="normal"
-            InputLabelPro
-            ps={{ shrink: true }}
-          /> */}
            <LocalizationProvider dateAdapter={AdapterDayjs}>
              <DatePicker
               label="Expiration Date (optional)"

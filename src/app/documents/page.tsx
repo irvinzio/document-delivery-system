@@ -12,7 +12,6 @@ export default function DocumentsPage() {
   const [error, setError] = useState("");
   const [viewedDoc, setViewedDoc] = useState<any>(null);
   function handleDownload(doc: any) {
-    // Decode base64 and download as original file
     const matches = doc.content.match(/^data:(.+);base64,(.+)$/);
     if (!matches) {
       alert("Invalid file format");
@@ -21,17 +20,37 @@ export default function DocumentsPage() {
     const mimeType = matches[1];
     const b64Data = matches[2];
     const byteCharacters = atob(b64Data);
-    const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+    const byteNumbers = Array.from(byteCharacters, c => c.charCodeAt(0));
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = doc.name;
+    a.download = doc.name || "document";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  function getDocumentPreview(doc: any) {
+    if (typeof doc.content === "string" && doc.content.startsWith("data:")) {
+      const mime = doc.content.split(';')[0].replace('data:', '');
+      if (mime.startsWith("image/")) {
+        return <img src={doc.content} alt={doc.name} style={{ maxWidth: "100%", maxHeight: 300 }} />;
+      }
+      if (mime === "application/pdf") {
+        return <iframe src={doc.content} title="PDF Preview" style={{ width: "100%", height: 400, border: "none" }} />;
+      }
+      if (mime.startsWith("text/")) {
+        const matches = doc.content.match(/^data:(.+);base64,(.+)$/);
+        if (matches) {
+          const decoded = atob(matches[2]);
+          return <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 1, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>{decoded}</Box>;
+        }
+      }
+    }
+    return <Typography>Preview not available. Please download the file.</Typography>;
   }
 
   useEffect(() => {
@@ -122,28 +141,7 @@ export default function DocumentsPage() {
           <Box sx={{ mt: 4, p: 3, borderRadius: 2, boxShadow: 2, bgcolor: 'grey.100' }}>
             <Typography variant="h6" mb={2}>Document: {viewedDoc.name}</Typography>
             <Typography mb={2}>Content Preview:</Typography>
-            {/* Try to preview common file types */}
-            {(() => {
-              if (typeof viewedDoc.content === "string" && viewedDoc.content.startsWith("data:")) {
-                const mime = viewedDoc.content.split(';')[0].replace('data:', '');
-                if (mime.startsWith("image/")) {
-                  return <img src={viewedDoc.content} alt={viewedDoc.name} style={{ maxWidth: "100%", maxHeight: 300 }} />;
-                }
-                if (mime === "application/pdf") {
-                  return <iframe src={viewedDoc.content} title="PDF Preview" style={{ width: "100%", height: 400, border: "none" }} />;
-                }
-                if (mime.startsWith("text/")) {
-                  // Show text content
-                  const matches = viewedDoc.content.match(/^data:(.+);base64,(.+)$/);
-                  if (matches) {
-                    const decoded = atob(matches[2]);
-                    return <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 1, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>{decoded}</Box>;
-                  }
-                }
-              }
-              // Fallback: show download link
-              return <Typography>Preview not available. Please download the file.</Typography>;
-            })()}
+            {getDocumentPreview(viewedDoc)}
             <Button variant="contained" color="success" sx={{ mt: 2 }} onClick={() => handleDownload(viewedDoc)}>
               Download
             </Button>
